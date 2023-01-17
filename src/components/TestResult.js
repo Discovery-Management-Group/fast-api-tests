@@ -9,7 +9,7 @@ import {ConditionalRender} from "./ConditionalRender";
 
 export default function TestResult(props) {
     const ranOnce = useRef();
-    const [jsonVisible, setJsonVisible] = useState(true);
+    const [jsonVisible, setJsonVisible] = useState(false);
     const [testResult, setTestResult] = useState([]);
     const [apiResult, setApiResult] = useState({
         message: "Test Pending",
@@ -70,10 +70,21 @@ export default function TestResult(props) {
                 badge = "❌ ";
             }
 
+            let conditionString = String(condition);
+            conditionString = conditionString.replace("function(e)", "");
+            conditionString = conditionString.replace("return", "");
+            conditionString = conditionString.replace("e.", "hookResponse.");
+            conditionString = conditionString.replace("{", "");
+            conditionString = conditionString.replace("}", "");
+            conditionString = conditionString.replace("===", " === ");
+            conditionString = conditionString.replace("!==", " !== ");
+            conditionString = conditionString.replace("!1", "false");
+            conditionString = conditionString.replace("!0", "true");
+
             return (
-                <p key={condition.toString()}>
+                <p key={conditionString}>
                 {badge}
-                {String(condition)}
+                {conditionString}
                 </p>
             )
         })
@@ -107,9 +118,9 @@ export default function TestResult(props) {
                         Response Object
                     </Card.Subtitle>
                     <ReactJson
-                        name={"result"}
+                        name={"hookResponse"}
                         collapsed={1}
-                        src={_.omit(apiResult, "message")}
+                        src={apiResult}
                     />
                     <Button
                         style={{marginTop: "1rem", width:"100%"}}
