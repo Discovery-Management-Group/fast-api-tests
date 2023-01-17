@@ -124,11 +124,11 @@ export default function TestResult(props) {
                     />
                     <Button
                         style={{marginTop: "1rem", width:"100%"}}
-                        variant={testResult === null ? "outline-primary" : "primary"}
+                        variant={testResult.length ===0 ? "outline-primary" : "primary"}
                         onClick={runTest}
-                        disabled={testResult === null}
+                        disabled={testResult.length ===0}
                     >
-                        {testResult === null ? "Test Pending" : "Run Test Again"}
+                        {testResult.length ===0 ? "Test Pending" : "Run Test Again"}
                     </Button>
                 </Card.Body>
             </ConditionalRender>
