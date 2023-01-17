@@ -1,26 +1,30 @@
 import TestResult from "./components/TestResult";
 import testUsers from "./testUsers";
+import {Row, Col} from "react-bootstrap";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function App() {
-  function RenderUserTests() {
-    return testUsers.map((user) => {
-      return (
-        <TestResult
-          key={user.testName}
-          email={user.email}
-          password={user.password}
-          testName={user.testName}
-          testCallback={user.testFunction}
-        />
-      );
-    });
-  }
+    function RenderUserTests() {
+        return testUsers.map((user) => {
+            return (
+                <TestResult
+                    key={user.testName}
+                    email={user.email}
+                    password={user.password}
+                    testName={user.testName}
+                    testCallback={user.testFunction}
+                    testConditions={user.testConditions}
+                />
+            );
+        });
+    }
 
-  return (
-    <div className="App">
-      <h1>Login API Status</h1>
-      <RenderUserTests />
-    </div>
-  );
+    return (
+        <Row className="App" style={{margin: "1rem"}}>
+            <Col>
+                <h1>Login API Status</h1>
+                <RenderUserTests/>
+            </Col>
+        </Row>
+    );
 }

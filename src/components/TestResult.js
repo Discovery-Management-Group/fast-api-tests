@@ -3,10 +3,14 @@ import useLogin from "../hooks/useLogin";
 import ReactJson from "react-json-view";
 import _ from "lodash";
 import Badge from 'react-bootstrap/Badge';
+import Button from 'react-bootstrap/Button';
+import {Card} from "react-bootstrap";
+import {ConditionalRender} from "./ConditionalRender";
 
 export default function TestResult(props) {
     const ranOnce = useRef();
-    const [testResult, setTestResult] = useState(null);
+    const [jsonVisible, setJsonVisible] = useState(false);
+    const [testResult, setTestResult] = useState([]);
     const [apiResult, setApiResult] = useState({
         message: "Test Pending",
         authenticationResponse: {},
@@ -18,37 +22,105 @@ export default function TestResult(props) {
         password: props.password,
         onComplete: (loginStatus) => {
             setApiResult(loginStatus);
-            setTestResult(props.testCallback(loginStatus));
+            const testResults = props.testConditions.map((condition) => {
+                return condition(loginStatus);
+            });
+            setTestResult(testResults);
         }
     });
 
-    useEffect( () => {
+    function runTest() {
+        console.log("Running test: ", props.testName);
+        setTestResult([]);
+        setApiResult({
+            message: "Test Pending",
+            authenticationResponse: {},
+            subscriptionResponse: {}
+        })
+        userLogin.validate()
+        ranOnce.current = true;
+    }
+
+    useEffect(() => {
         if (ranOnce.current !== true) {
-            console.log("Running test: ", props.testName);
-            userLogin.validate()
-            ranOnce.current = true;
+            runTest();
         }
     }, []);
 
-    function getBadgeColor(){
-    if (testResult === true) {
-            return "success";
-        } else if (testResult === false) {
+    function getBadgeColor() {
+        if (testResult.includes(false)) {
             return "danger";
+        } else if (testResult.includes(true)) {
+            return "success";
         } else {
             return "secondary";
         }
     }
 
+    function TestConditions() {
+        return props.testConditions.map((condition,index) => {
+            let badge = "";
+            if(testResult.length===0){
+                badge = "🕚 "
+            }
+            else if(testResult[index] === true){
+                badge = "✅ ";
+            }
+            else{
+                badge = "❌ ";
+            }
+
+            return (
+                <p key={condition.toString()}>
+                {badge}
+                {condition.toString()}
+                </p>
+            )
+        })
+    }
+
     return (
-        <h5>
-            {props.testName}:
-            <Badge bg={getBadgeColor()}>{apiResult.message}</Badge>
-            <ReactJson
-                src={_.omit(apiResult, "message")}
-                name={null}
-                collapsed={true}
-            />
-        </h5>
+        <Card
+            style={{marginTop: "1rem", paddingBottom: "-1rem"}}
+        >
+            <Button
+                style={{padding: "1rem", margin: "0.5rem", alignItems: "left", textAlign: "left"}}
+                variant={"light"}
+                onClick={() => {
+                    setJsonVisible(!jsonVisible)
+                }}
+            >
+                <Card.Title>
+                    {props.testName}:{" "}
+                    <Badge bg={getBadgeColor()}>{apiResult.message}</Badge>
+                </Card.Title>
+            </Button>
+
+            <ConditionalRender renderCondition={jsonVisible}>
+                <Card.Body>
+                    <Card.Subtitle className="mb-2 text-muted">Test Conditions</Card.Subtitle>
+                    <TestConditions/>
+                    <Card.Subtitle
+                        className="mb-2 text-muted"
+                        style={{marginTop: "1rem"}}
+                    >
+                        Response Object
+                    </Card.Subtitle>
+                    <ReactJson
+                        name={"result"}
+                        collapsed={1}
+                        src={_.omit(apiResult, "message")}
+                    />
+                    <Button
+                        style={{marginTop: "1rem", width:"100%"}}
+                        variant={testResult === null ? "outline-primary" : "primary"}
+                        onClick={runTest}
+                        disabled={testResult === null}
+                    >
+                        {testResult === null ? "Test Pending" : "Run Test Again"}
+                    </Button>
+                </Card.Body>
+            </ConditionalRender>
+        </Card>
     );
 }
