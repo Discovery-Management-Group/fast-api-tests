@@ -9,7 +9,7 @@ import {ConditionalRender} from "./ConditionalRender";
 
 export default function TestResult(props) {
     const ranOnce = useRef();
-    const [jsonVisible, setJsonVisible] = useState(false);
+    const [jsonVisible, setJsonVisible] = useState(true);
     const [testResult, setTestResult] = useState([]);
     const [apiResult, setApiResult] = useState({
         message: "Test Pending",
@@ -73,7 +73,7 @@ export default function TestResult(props) {
             return (
                 <p key={condition.toString()}>
                 {badge}
-                {condition.toString()}
+                {String(condition)}
                 </p>
             )
         })

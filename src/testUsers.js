@@ -22,7 +22,10 @@ const testUsers = [
     email: "registered_and_unpaid@mailinator.com",
     password: "Password123!",
     testConditions: [
-        result => result.subscriptionResponse.data.status === false,
+      result => result.subscriptionResponse.data.status === false,
+      result => result.authenticationResponse["email"] === "registered_and_unpaid@mailinator.com",
+      result => result.authenticationResponse["given_name"] === "Free",
+      result => result.authenticationResponse["family_name"] === "Loader",
     ],
   },
 
@@ -31,7 +34,11 @@ const testUsers = [
     email: "has_premium_subscription@mailinator.com",
     password: "Password123!",
     testConditions: [
-        result => result.subscriptionResponse.data.status === true,
+      result => result.subscriptionResponse.data.status === true,
+      result => result.authenticationResponse["email"] === "has_premium_subscription@mailinator.com",
+      result => result.authenticationResponse["given_name"] === "High",
+      result => result.authenticationResponse["family_name"] === "Roller",
+
     ],
   }
 ];
