@@ -7,7 +7,7 @@ import Button from 'react-bootstrap/Button';
 import {Card} from "react-bootstrap";
 import {ConditionalRender} from "./ConditionalRender";
 
-export default function TestResult(props) {
+export default function DisplayLoginTest(props) {
     const ranOnce = useRef();
     const [jsonVisible, setJsonVisible] = useState(false);
     const [testResult, setTestResult] = useState([]);
@@ -124,11 +124,11 @@ export default function TestResult(props) {
                     />
                     <Button
                         style={{marginTop: "1rem", width:"100%"}}
-                        variant={testResult.length ===0 ? "outline-primary" : "primary"}
+                        variant={apiResult.message ==="Test Pending" ? "outline-primary" : "primary"}
                         onClick={runTest}
-                        disabled={testResult.length ===0}
+                        disabled={apiResult.message ==="Test Pending"}
                     >
-                        {testResult.length ===0 ? "Test Pending" : "Run Test Again"}
+                        {apiResult.message ==="Test Pending" ? "Test Pending" : "Run Test Again"}
                     </Button>
                 </Card.Body>
             </ConditionalRender>
