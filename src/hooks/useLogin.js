@@ -29,7 +29,7 @@ export default function useLogin(props) {
   async function validateUserSubscription() {
     const poolData = {
       UserPoolId: "us-east-1_jt5NMhoTk",
-      ClientId: "7mtgtq8v0drgkg2gg869m2capq"
+      ClientId: "7mtgtq8v0drgkg2gg869m2capq",
     };
 
     const cognitoPool = new CognitoUserPool(poolData);
@@ -67,7 +67,7 @@ export default function useLogin(props) {
       },
       onFailure: (err) => {
         props.onComplete({
-          message: "Authentication error",
+          message: err.code,
           authenticationResponse: err,
           subscriptionResponse: {}
         });

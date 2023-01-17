@@ -1,5 +1,6 @@
 import TestResult from "./components/TestResult";
 import testUsers from "./testUsers";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function App() {
   function RenderUserTests() {
@@ -10,6 +11,7 @@ export default function App() {
           email={user.email}
           password={user.password}
           testName={user.testName}
+          testCallback={user.testFunction}
         />
       );
     });
