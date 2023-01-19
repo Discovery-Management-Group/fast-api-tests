@@ -77,6 +77,8 @@ export default function DisplayLoginTest(props) {
             conditionString = conditionString.replace("{", "");
             conditionString = conditionString.replace("}", "");
             conditionString = conditionString.replace("===", " === ");
+            conditionString = conditionString.replace("&&", " && ");
+            conditionString = conditionString.replace("||", " || ");
             conditionString = conditionString.replace("!==", " !== ");
             conditionString = conditionString.replace("!1", "false");
             conditionString = conditionString.replace("!0", "true");
