@@ -121,7 +121,7 @@ export const testUsers = [
       result => result.authenticationResponse["given_name"] === "Free",
       result => result.authenticationResponse["family_name"] === "Loader",
       result => result.message === "unpaid",
-      result => result.subscriptionResponse.data.expiration === "" || result.subscriptionResponse.data.expiration === 0
+      result => result.subscriptionResponse.data["current_period_end"] === "" || result.subscriptionResponse.data.expiration === 0
     ],
   },
 
