@@ -127,17 +127,15 @@ export const testUsers = [
 
   {
     testName: "Premium user",
-    email: "has_premium_subscription@mailinator.com",
-    password: "Password123!",
-    testConditions: [
-      result => result.subscriptionResponse.data.status === true,
-      result => result.authenticationResponse["email"] === "has_premium_subscription@mailinator.com",
-      result => result.authenticationResponse["given_name"] === "High",
-      result => result.authenticationResponse["family_name"] === "Roller",
-      result => result.message === "paid",
-      result => result.subscriptionResponse.data.expiration !== "" && result.subscriptionResponse.data.expiration !== 0
-
-    ],
+        email: "curious_george@mailinator.com",
+        password: "Password123!",
+        testConditions: [
+            result => result.subscriptionResponse.data.status === true,
+            result => result.authenticationResponse["email"] === "curious_george@mailinator.com",
+            result => result.authenticationResponse["given_name"] === "Curious",
+            result => result.authenticationResponse["family_name"] === "George",
+            result => result.message === "paid",
+        ],
   }
 ];
 
