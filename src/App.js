@@ -1,7 +1,9 @@
 import DisplayLoginTest from "./components/DisplayLoginTest";
-import {testUsers} from "./hooks/useLogin";
+import DisplaySubscriptionTest from "./components/DisplaySubscriptionTest";
+import {testUsers, testSubscriptions, validateEmail} from "./hooks/useLogin";
 import {Row, Col} from "react-bootstrap";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import {useEffect} from "react";
 
 export default function App() {
     function RenderUserTests() {
@@ -9,10 +11,25 @@ export default function App() {
             return (
                 <DisplayLoginTest
                     key={user.testName}
+                    isDev={user.isDev}
                     email={user.email}
                     password={user.password}
                     testName={user.testName}
-                    testCallback={user.testFunction}
+                    testConditions={user.testConditions}
+                />
+            );
+        });
+    }
+
+    function RenderSubscriptionTests() {
+        return testSubscriptions.map((user) => {
+            return (
+                <DisplaySubscriptionTest
+                    key={user.testName}
+                    testName={user.testName}
+                    testFunction = {async ()=>{
+                        return validateEmail(user.email, user.isDev);
+                    }}
                     testConditions={user.testConditions}
                 />
             );
@@ -24,6 +41,9 @@ export default function App() {
             <Col>
                 <h1>Login API Status</h1>
                 <RenderUserTests/>
+                <br/>
+                <h1>Subscription API Status</h1>
+                <RenderSubscriptionTests/>
             </Col>
         </Row>
     );

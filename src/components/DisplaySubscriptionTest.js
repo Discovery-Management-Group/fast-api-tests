@@ -8,38 +8,11 @@ import {Card} from "react-bootstrap";
 import {ConditionalRender} from "./ConditionalRender";
 
 export default function DisplayLoginTest(props) {
-    const ranOnce = useRef();
     const [jsonVisible, setJsonVisible] = useState(false);
     const [testResult, setTestResult] = useState([]);
     const [apiResult, setApiResult] = useState({
         message: "Idle",
-        authenticationResponse: {},
-        subscriptionResponse: {}
     });
-
-    const userLogin = useLogin({
-        email: props.email,
-        password: props.password,
-        onComplete: (loginStatus) => {
-            setApiResult(loginStatus);
-            const testResults = props.testConditions.map((condition) => {
-                return condition(loginStatus);
-            });
-            setTestResult(testResults);
-        }
-    });
-
-    function runTest() {
-        console.log("Running test: ", props.testName);
-        setTestResult([]);
-        setApiResult({
-            message: "Test Pending",
-            authenticationResponse: {},
-            subscriptionResponse: {}
-        })
-        userLogin.validate()
-        ranOnce.current = true;
-    }
 
     function getBadgeColor() {
         if (testResult.includes(false)) {
@@ -79,8 +52,8 @@ export default function DisplayLoginTest(props) {
 
             return (
                 <p key={conditionString}>
-                {badge}
-                {conditionString}
+                    {badge}
+                    {conditionString}
                 </p>
             )
         })
@@ -114,14 +87,21 @@ export default function DisplayLoginTest(props) {
                         Response Object
                     </Card.Subtitle>
                     <ReactJson
-                        name={"hookResponse"}
+                        name={"Response Object"}
                         collapsed={1}
                         src={apiResult}
                     />
                     <Button
                         style={{marginTop: "1rem", width:"100%"}}
                         variant={apiResult.message === "Test Pending" ? "outline-primary" : "primary"}
-                        onClick={runTest}
+                        onClick={async ()=>{
+                            const response = await props.testFunction();
+                            setApiResult(response);
+                            const testResults = props.testConditions.map((condition,index)=>{
+                                return(condition(response));
+                            });
+                            setTestResult(testResults);
+                        }}
                         disabled={apiResult.message === "Test Pending"}
                     >
                         {apiResult.message === "Test Pending" ? "Test Pending" : "Run Test"}

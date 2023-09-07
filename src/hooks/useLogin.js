@@ -22,14 +22,42 @@ import {
 import axios from "axios";
 import { useState } from "react";
 
+export async function validateEmail(email, isDev=true){
+  const testEndpoint = `https://1gjpy63ru4.execute-api.us-east-1.amazonaws.com/test/customers/subscription?email=${email}`;
+  const prodEndpoint = `https://1gjpy63ru4.execute-api.us-east-1.amazonaws.com/prod/customers/subscription?email=${email}`;
+  let response;
+  try {
+    response = await fetch(isDev ? testEndpoint : prodEndpoint);
+  }catch (e){
+    if(e.message === "NetworkError when attempting to fetch resource."){
+      return {
+        message: "NetworkError",
+        status: false,
+        stripeId:"",
+        current_period_end:"",
+      }
+    }
+    console.warn("Unknown fetch error in user subscription validation.")
+    return {
+      message: e.message,
+      status: false,
+      stripeId:"",
+      current_period_end:"",
+    }
+  }
+
+  return await response.json();
+}
+
+
 export default function useLogin(props) {
   const [email, setEmail] = useState(props.email);
   const [password, setPassword] = useState(props.password);
 
   async function validateUserSubscription() {
     const poolData = {
-      UserPoolId: "us-east-1_jt5NMhoTk",
-      ClientId: "7mtgtq8v0drgkg2gg869m2capq",
+      UserPoolId: props.isDev ? "us-east-1_jt5NMhoTk" : "us-east-1_x1PmfhoEc",
+      ClientId: props.isDev ? "7mtgtq8v0drgkg2gg869m2capq" : "2fs0dtiecpdl14397djtb4hc5",
     };
 
     const cognitoPool = new CognitoUserPool(poolData);
@@ -95,9 +123,10 @@ export const testUsers = [
     testName: "Unregistered user",
     email: `total_garbage${Math.floor(Math.random() * 10000)}@mailinator.com`,
     password: "Password123!",
+    isDev: true,
     testConditions:[
       result => result.authenticationResponse.code === "NotAuthorizedException",
-        result => result.message === "unauthorized"
+      result => result.message === "unauthorized"
     ],
   },
 
@@ -105,6 +134,7 @@ export const testUsers = [
     testName: "Unconfirmed user",
     email: "i_am_unconfirmed@mailinator.com",
     password: "Password123!",
+    isDev: true,
     testConditions: [
       result => result.authenticationResponse.code === "UserNotConfirmedException",
       result => result.message === "unconfirmed",
@@ -115,6 +145,7 @@ export const testUsers = [
     testName: "Unpaid user",
     email: "registered_and_unpaid@mailinator.com",
     password: "Password123!",
+    isDev: true,
     testConditions: [
       result => result.subscriptionResponse.data.status === false,
       result => result.authenticationResponse["email"] === "registered_and_unpaid@mailinator.com",
@@ -127,15 +158,34 @@ export const testUsers = [
 
   {
     testName: "Premium user",
-        email: "curious_george@mailinator.com",
-        password: "Password123!",
-        testConditions: [
-            result => result.subscriptionResponse.data.status === true,
-            result => result.authenticationResponse["email"] === "curious_george@mailinator.com",
-            result => result.authenticationResponse["given_name"] === "Curious",
-            result => result.authenticationResponse["family_name"] === "George",
-            result => result.message === "paid",
-        ],
+    email: "curious_george@mailinator.com",
+    password: "Password123!",
+    isDev: true,
+    testConditions: [
+      result => result.subscriptionResponse.data.status === true,
+      result => result.authenticationResponse["email"] === "curious_george@mailinator.com",
+      result => result.authenticationResponse["given_name"] === "Curious",
+      result => result.authenticationResponse["family_name"] === "George",
+      result => result.message === "paid",
+    ],
   }
 ];
 
+export const testSubscriptions = [
+  {
+    testName: "Premium user",
+    email: "curious_george@mailinator.com",
+    isDev: true,
+    testConditions: [
+        result => result.status === true,
+    ],
+  },
+  {
+    testName: "Unpaid user",
+    email: "registered_and_unpaid@mailinator.com",
+    isDev: true,
+    testConditions: [
+        result => result.status === false,
+    ],
+  }
+]
