@@ -18,6 +18,7 @@ export default function DisplayLoginTest(props) {
     });
 
     const userLogin = useLogin({
+        isDev: props.isDev,
         email: props.email,
         password: props.password,
         onComplete: (loginStatus) => {
